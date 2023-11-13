@@ -85,7 +85,6 @@ export default {
           .then((res: any) => {
             window.localStorage.clear();
             ElMessage.success('Log out successfully');
-            router.push({ path: '/login' })
           })
           .catch((err: any) => {
             ElMessage.error('Log out failed');

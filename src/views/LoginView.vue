@@ -97,7 +97,9 @@ export default {
           message: 'Login successfully',
           type: 'success'
         });
-        router.push({ path: '/' })
+        router.push({ path: '/' });
+        window.localStorage.setItem('token', res.token);
+        console.log(window.localStorage.getItem('token'))
       })
       .catch((err: any) => {
         ElMessage({
