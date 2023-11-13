@@ -117,6 +117,7 @@ export default {
           message: 'Register successfully',
           type: 'success'
         })
+        console.log(res)
       })
       .catch((err: any) => {
         ElMessage({
