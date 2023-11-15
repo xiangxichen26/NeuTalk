@@ -37,8 +37,8 @@
   </div>
   <el-dialog v-model="createFormVisible" title="Create a post" class="createDialog">
     <el-form :model="createPostForm">
-      <el-form-item label="Subject" >
-        <el-input v-model="createPostForm.subject" maxlength="100" type="textarea"  autosize=true show-word-limit></el-input>
+      <el-form-item label="title" >
+        <el-input v-model="createPostForm.title" maxlength="100" type="textarea"  autosize=true show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="Content" >
         <el-input v-model="createPostForm.content" maxlength="1000" type="textarea" autosize=true show-word-limit></el-input>
@@ -70,12 +70,21 @@ export default {
     const createFormVisible = ref(false);
 
     const createPostForm = reactive({
-      subject: '',
+      title: '',
       content: ''
     });
 
 
     const createPost = () => {
+      proxy.$post('new/', createPostForm)
+        .then((res: any) => {
+          ElMessage.success('Create post successfully');
+          createFormVisible.value = false;
+        })
+        .catch((err: any) => {
+          ElMessage.error('Create post failed');
+          console.log(err)
+        })
       
     };
 
