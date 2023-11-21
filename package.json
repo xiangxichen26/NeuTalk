@@ -13,7 +13,6 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/"
-    
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
@@ -21,6 +20,7 @@
     "element-plus": "^2.4.2",
     "js-base64": "^3.7.5",
     "mockjs": "^1.1.0",
+    "moment": "^2.29.4",
     "pinia": "^2.1.7",
     "qs": "^6.11.2",
     "vite-plugin-mock": "^2.9.8",

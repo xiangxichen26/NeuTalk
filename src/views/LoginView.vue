@@ -127,6 +127,7 @@ export default {
           type: 'error'
         });
         console.log(err)
+        console.log(window.localStorage.getItem('token'))
       })
     }
 
