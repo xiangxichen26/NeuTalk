@@ -6,6 +6,7 @@ import axios from 'axios'
 import App from './App.vue'
 import router from './router'
 import http from './utils/request'
+import './assets/global.css';
 
 const app = createApp(App)
 

@@ -5,20 +5,23 @@
       <el-header class="homeHeader">
         <!--logo-->
         <div class="logo">
-          <img src="../assets/logo.svg" />
-          <div>NEU Talk</div>
+          <img src="../assets/logo.png" />
+          <div class="logoFont">NEU Talk</div>
         </div>
+
         <div class="headerRight">
           <!--create button-->
-          <el-button type="primary" round size="small" class="createButton"
+          <el-button type="primary" round class="createButton"
             @click="createFormVisible = true">Create</el-button>
+          <!--collections-->
+          <el-button class="collectionButton" color="#f2f3f5" :icon="Star" circle>
+          </el-button>
           <!--vatar-->
           <el-dropdown class="avatar-container" trigger="click" @command="handleCommand">
             <div class="avatar-wrapper">
-              <el-avatar shape="circle" :size="40">
-                <img src="../assets/user.svg">
+              <el-avatar shape="circle" :size="32">
+                <img src="../assets/user.png">
               </el-avatar>
-              <i class="el-icon-s-tools"></i>
             </div>
             <template #dropdown>
               <el-dropdown-menu class="user-dropdown">
@@ -32,29 +35,15 @@
       </el-header>
       <!--main-->
       <el-main class="homeMain">
-        <!--post list-->
-        <div class="postListCard">
-          <div class="postItem" v-for="post in postList" :key="post.post_id" @click="getPostDetail(post.post_id)">
-            <div class="postItemAvatar">
-              <el-avatar shape="circle" :size="40">
-                <img src="../assets/user.svg">
-              </el-avatar>
-            </div>
-            <div class="postItemContent">
-              <div class="postTitle">{{ post.author }} create a post: {{ post.title }}</div>
-              <div class="postContent">{{ post.content }}</div>
-              <div class="postTime">{{ formatTime(post.created_at) }}</div>
-              <el-divider></el-divider>
-            </div>
-          </div>
-        </div>
+        <router-view></router-view>
       </el-main>
     </el-container>
   </div>
+  <!--create post dialog-->
   <el-dialog v-model="createFormVisible" title="Create a post" class="createDialog">
     <el-form :model="createPostForm">
       <el-form-item label="Title">
-        <el-input v-model="createPostForm.title" maxlength="100" type="textarea" autosize=true show-word-limit></el-input>
+        <el-input class="createFormItem" v-model="createPostForm.title" maxlength="100" type="textarea" autosize=true show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="Content">
         <el-input v-model="createPostForm.content" maxlength="1000" type="textarea" autosize=true
@@ -75,10 +64,10 @@
 
 <script lang="ts">
 import { ElMessage } from 'element-plus';
-import { getCurrentInstance, ref, reactive, onMounted } from 'vue'
+import { getCurrentInstance, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router';
 import { formatTime } from '../utils/time';
-import { ChatLineRound } from '@element-plus/icons-vue';
+import { ChatLineRound, Search, Star } from '@element-plus/icons-vue';
 
 export default {
   setup() {
@@ -88,6 +77,8 @@ export default {
 
     const createFormVisible = ref(false);
 
+    const usernameSearch = ref('');
+
     const createPostForm = reactive({
       title: '',
       content: ''
@@ -95,18 +86,26 @@ export default {
 
     const postList = ref([
       {
-        post_id:"",
-        title:"",
-        content:"",
-        author:"",
-        created_at:"",
+        post_id: "",
+        title: "",
+        content: "",
+        author_username: "",
+        created_at: "",
       }
     ]);
 
 
     const createPost = () => {
-      proxy.$post('new/', createPostForm)
+      proxy.$post('http://127.0.0.1:5173/api/new/', createPostForm)
         .then((res: any) => {
+          createPostForm.content = '';
+          createPostForm.title = '';
+          if (window.location.pathname==='/postList') {
+            window.location.reload();
+          }
+          else {
+            router.push({ path: '/postList' });
+          }
           ElMessage.success('Create post successfully');
           createFormVisible.value = false;
         })
@@ -119,15 +118,27 @@ export default {
 
     const handleCommand = (command: string | number | object) => {
       if (command === 'logout') {
-        proxy.$post('logout/')
+        proxy.$post('http://127.0.0.1:5173/api/logout/')
           .then((res: any) => {
             window.localStorage.clear();
             ElMessage.success('Log out successfully');
+            router.push({ path: '/login' });
           })
           .catch((err: any) => {
             ElMessage.error('Log out failed');
             console.log(err)
           })
+      }
+    };
+
+    const handleClick = (tab: any) => {
+      if (tab.name === 'Home') {
+        router.push({ path: '/' });
+        console.log('Home')
+      }
+      else if (tab.name === 'My Collection') {
+        router.push({ path: '/postCollections' });
+        console.log('My Collection')
       }
     };
 
@@ -143,14 +154,6 @@ export default {
         })
     };
 
-    const getPostDetail = (postid :String) => {
-      let id = postid.toString();
-      router.push({ name: 'postDetail', params: { id: id } })
-    };
-
-    onMounted(() => {
-      getPostList();
-    });
 
 
     return {
@@ -158,10 +161,13 @@ export default {
       createPost,
       createFormVisible,
       createPostForm,
-      postList,
       formatTime,
       ChatLineRound,
-      getPostDetail,
+      handleClick,
+      getPostList,
+      usernameSearch,
+      Search,
+      Star,
     }
 
   }
@@ -178,6 +184,10 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.logoFont{
+  font-family: PingFang SC;
 }
 
 .el-container {
@@ -198,12 +208,12 @@ export default {
     align-items: center;
     font-size: 20px;
     font-weight: bold;
-    font-family: PingfangSC-Medium;
+    font-family: PingfangSC;
     color: #1D2129;
 
     img {
       width: 40px;
-      height: 40px;
+      // height: 40px;
       margin-right: 10px;
     }
   }
@@ -221,13 +231,19 @@ export default {
   justify-content: space-between;
 }
 
+.searchInput {
+  width: 200px;
+  margin-right: 20px;
+}
+
 .createButton {
-  margin-right: 80px;
-  display: flex;
-  padding: 5px 16px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
+  margin-right: 85px;
+}
+
+.collectionButton {
+  width: 32px;
+  height: 32px;
+  margin-right: 16px;
 }
 
 
@@ -239,68 +255,9 @@ export default {
   // height: 91vh;
 }
 
-.postListCard {
-  width: 925px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--fill-1, #FFF);
-  margin-top: 37px;
-  padding: 20px 27px;
-}
-
-.postItem {
-  height: auto;
-  padding: 13px 20px;
-  align-self: stretch;
-  display: flex;
-  flex-direction: row;
-}
-
-.postItemAvatar {
-  width: 40px;
-  margin-right: 16px;
-}
-
-.postItemContent {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 100%;
-}
-
-
-.postTitle {
-  font-size: 14px;
-  font-weight: 500;
-  font-family: PingFangSC;
-  line-height: 22px;
-  color: #1D2129;
-  margin-bottom: 10px;
-}
-
-.postContent {
-  font-size: 14px;
-  font-family: PingFangSC;
-  font-weight: 400;
-  line-height: 22px;
-  color: #4E5969;
-  margin-bottom: 10px;
-
-}
-
-.postTime {
-  font-size: 12px;
-  font-family: PingFangSC;
-  font-weight: 400;
-  color: #4E5969;
-  display: flex;
-  justify-content: flex-end;
-}
-
 .createDialog {
   width: 500px;
   font-family: PingFangSC;
 }
+
 </style>

@@ -6,17 +6,31 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/HomePage.vue')
+      component: () => import('../views/HomePage.vue'),
+      redirect: '/postList',
+      children: [
+        {
+          path:'/postList',
+          name:'postList',
+          component: () => import('../views/PostList.vue')
+        },
+        {
+          path:'/postDetail/:id',
+          name:'postDetail',
+          component: () => import('../views/PostDetail.vue')
+        },
+        {
+          path:'/postCollections',
+          name:'postCollections',
+          component: () => import('../views/PostCollections.vue')
+        },
+
+      ]
     },
     {
       path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue')
-    },
-    {
-      path:'/postDetail/:id',
-      name:'postDetail',
-      component: () => import('../views/PostDetail.vue')
     },
   ]
 })
