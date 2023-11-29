@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { getCurrentInstance, ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router';
 import { formatTime } from '../utils/time';
 import { ChatLineRound, Search } from '@element-plus/icons-vue';
@@ -48,8 +48,6 @@ import banner3 from '../assets/img/banner3.png';
 
 export default {
   setup() {
-    const { proxy } = getCurrentInstance() as any;
-
     const router = useRouter();
 
     const postList = ref([

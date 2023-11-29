@@ -97,7 +97,7 @@ export default {
 
     const createPost = () => {
       proxy.$post('http://127.0.0.1:5173/api/new/', createPostForm)
-        .then((res: any) => {
+        .then(() => {
           createPostForm.content = '';
           createPostForm.title = '';
           if (window.location.pathname==='/postList') {
@@ -119,7 +119,7 @@ export default {
     const handleCommand = (command: string | number | object) => {
       if (command === 'logout') {
         proxy.$post('http://127.0.0.1:5173/api/logout/')
-          .then((res: any) => {
+          .then(() => {
             window.localStorage.clear();
             ElMessage.success('Log out successfully');
             router.push({ path: '/login' });

@@ -278,8 +278,6 @@ export default {
         }
     }
 
-    .commentList {}
-
     .commentTimeline {
         margin-left: -38px;
 
