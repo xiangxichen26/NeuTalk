@@ -1,16 +1,18 @@
 <template>
   <div>
     <!--welcome-->
-    <el-carousel height="150px">
-      <el-carousel-item v-for="item in 4" :key="item">
-        <h3 class="small justify-center" text="2xl">{{ item }}</h3>
+    <el-carousel :interval="2500" height="200px" >
+      <el-carousel-item v-for="item in imgList" :key="item.id" >
+        <img :src="item.url" style="width:100%;" />
       </el-carousel-item>
     </el-carousel>
     <div class="filterArea">
       <!--search filter-->
-      <el-input class="searchInput" v-model="searchInput" placeholder="Please input username" :suffix-icon="Search" />
-      <div class="datePicker"> <el-date-picker v-model="filterDate" type="daterange" start-placeholder="Start date"
-          end-placeholder="End date" /> </div>
+      <el-input class="searchInput" v-model="searchInput" placeholder="Please input username" :suffix-icon="Search" @change="getPostList()"/>
+      <div class="datePicker"> 
+        <el-date-picker v-model="filterDate" type="daterange" start-placeholder="Start date"
+          end-placeholder="End date" @change="getPostList()" />
+      </div>
     </div>
     <!--post list-->
     <div class="postListCard">
@@ -39,6 +41,10 @@ import { getCurrentInstance, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router';
 import { formatTime } from '../utils/time';
 import { ChatLineRound, Search } from '@element-plus/icons-vue';
+import axios from 'axios';
+
+import banner2 from '../assets/img/banner2.png';
+import banner3 from '../assets/img/banner3.png';
 
 export default {
   setup() {
@@ -56,17 +62,34 @@ export default {
       }
     ]);
 
+    const imgList = ref([
+      {
+        id:'1',
+        url: banner2,
+
+      },
+      {
+        id:'1',
+        url: banner3,
+      }
+     
+
+    ]);
+
     const searchInput = ref("");
 
     const filterDate = ref("");
 
-
-
     const getPostList = () => {
-      //console.log(localStorage.getItem('token'))
-      proxy.$get('threads/')
+      axios.get('threads/', {
+          params: {
+            author_name: searchInput.value,
+            start_date: filterDate.value[0],
+            end_date: filterDate.value[1],
+          }
+        })
         .then((res: any) => {
-          postList.value = res;
+          postList.value = res.data;
           console.log(postList.value)
         })
         .catch((err: any) => {
@@ -92,6 +115,8 @@ export default {
       Search,
       searchInput,
       filterDate,
+      imgList,
+      getPostList,
 
     }
 

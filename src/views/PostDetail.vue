@@ -17,7 +17,10 @@
                         </el-avatar>
                         <div class="postDetailTitle">{{ postDetail.title }}</div>
                     </div>
-                    <el-button text type="primary">Collect</el-button>
+                    <div>
+                        <el-button v-if="favourite === '1'" text type="primary" @click="collectPost">Collect</el-button>
+                        <el-button v-else text type="primary" @click="cancelCollectPost">Remove collection</el-button>
+                    </div>
                 </div>
 
                 <!--username & create time-->
@@ -72,19 +75,16 @@ import { reactive, ref, getCurrentInstance, onMounted } from 'vue'
 import { formatTime } from '@/utils/time';
 import { useRouter } from 'vue-router';
 import { Plus, Star } from '@element-plus/icons-vue';
-
+import { ElMessage } from 'element-plus';
+import axios from 'axios';
 
 
 
 export default {
     setup() {
-
         const router = useRouter();
-
         const post_id = router.currentRoute.value.params.id;
-
         const { proxy } = getCurrentInstance() as any;
-
         const postDetail = ref({
             post_id: "",
             title: "",
@@ -102,47 +102,66 @@ export default {
             ]
         });
 
+        const favourite = ref('1');
         const commentCentent = reactive({
             content: "",
         });
-
         const createComment = () => {
-            proxy.$post('http://127.0.0.1:5173/api/posts/' + post_id + '/', commentCentent)
+            proxy.$post("http://127.0.0.1:5173/api/posts/" + post_id + "/", commentCentent)
                 .then((res: any) => {
-                    console.log(res)
+                    console.log(res);
                     getPostDetail();
                     commentCentent.content = "";
                 })
                 .catch((err: any) => {
-                    console.log(err)
-                })
-
-
+                    console.log(err);
+                });
         };
-
         const getPostDetail = () => {
             console.log();
-            proxy.$get('http://127.0.0.1:5173/api/posts/' + post_id)
+            proxy.$get("http://127.0.0.1:5173/api/posts/" + post_id)
                 .then((res: any) => {
                     postDetail.value = res;
-                    console.log(res)
+                    console.log(res);
                 })
                 .catch((err: any) => {
-                    console.log(err)
+                    console.log(err);
+                });
+        };
+        const collectPost = () => {
+            proxy.$post("http://127.0.0.1:5173/api/favorites/add/" + post_id + "/")
+                .then((res: any) => {
+                    console.log(res);
+                    ElMessage.success("Collect post successfully");
+                    favourite.value = '2';
+                    console.log(favourite);
                 })
+                .catch((err: any) => {
+                    console.log(err);
+                });
+        };
+
+        const cancelCollectPost = async() => {
+            try {
+                await axios.delete('http://127.0.0.1:5173/api/favorites/remove/'+ post_id + "/");
+                ElMessage.success("Remove collection successfully");
+                favourite.value = '1';
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    console.error('Error deleting resource:', error.response?.data);
+                } else {
+                    console.error('Unexpected error:', error);
+                }
+                throw error; 
+            }
         };
 
         const goToPostList = () => {
-            router.push({ path: '/postList' });
+            router.push({ path: "/postList" });
         };
-
         onMounted(() => {
             getPostDetail();
-
         });
-
-
-
         return {
             postDetail,
             formatTime,
@@ -152,9 +171,11 @@ export default {
             Plus,
             goToPostList,
             Star,
-
-        }
-    }
+            collectPost,
+            favourite,
+            cancelCollectPost
+        };
+    },
 }
 
 </script>
