@@ -11,11 +11,17 @@
 
         <div class="headerRight">
           <!--create button-->
-          <el-button type="primary" round class="createButton"
-            @click="createFormVisible = true">Create</el-button>
+          <el-button type="primary" round class="createButton" @click="createFormVisible = true">Create</el-button>
           <!--collections-->
-          <el-button class="collectionButton" color="#f2f3f5" :icon="Star" circle>
+          <el-tooltip class="box-item" effect="dark" content="My collections" placement="top-start">
+          <el-button class="collectionButton" color="#f2f3f5" :icon="Star" circle @click="goToCollectionList">
           </el-button>
+        </el-tooltip>
+          <!--my post-->
+          <el-tooltip class="box-item" effect="dark" content="My posts" placement="top-start">
+            <el-button class="myPostButton" color="#f2f3f5" :icon="Folder" circle @click="goToMyPostList">
+            </el-button>
+          </el-tooltip>
           <!--vatar-->
           <el-dropdown class="avatar-container" trigger="click" @command="handleCommand">
             <div class="avatar-wrapper">
@@ -43,7 +49,8 @@
   <el-dialog v-model="createFormVisible" title="Create a post" class="createDialog">
     <el-form :model="createPostForm">
       <el-form-item label="Title">
-        <el-input class="createFormItem" v-model="createPostForm.title" maxlength="100" type="textarea" autosize=true show-word-limit></el-input>
+        <el-input class="createFormItem" v-model="createPostForm.title" maxlength="100" type="textarea" autosize=true
+          show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="Content">
         <el-input v-model="createPostForm.content" maxlength="1000" type="textarea" autosize=true
@@ -67,7 +74,7 @@ import { ElMessage } from 'element-plus';
 import { getCurrentInstance, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router';
 import { formatTime } from '../utils/time';
-import { ChatLineRound, Search, Star } from '@element-plus/icons-vue';
+import { ChatLineRound, Search, Star, Folder } from '@element-plus/icons-vue';
 
 export default {
   setup() {
@@ -100,7 +107,7 @@ export default {
         .then(() => {
           createPostForm.content = '';
           createPostForm.title = '';
-          if (window.location.pathname==='/postList') {
+          if (window.location.pathname === '/postList') {
             window.location.reload();
           }
           else {
@@ -154,6 +161,13 @@ export default {
         })
     };
 
+    const goToCollectionList = () => {
+      router.push({ path: '/myCollectionList' });
+    };
+
+    const goToMyPostList = () => {
+      router.push({ path: '/myPostList' });
+    };
 
 
     return {
@@ -168,6 +182,9 @@ export default {
       usernameSearch,
       Search,
       Star,
+      Folder,
+      goToCollectionList,
+      goToMyPostList,
     }
 
   }
@@ -186,7 +203,7 @@ export default {
   height: 100%;
 }
 
-.logoFont{
+.logoFont {
   font-family: PingFang SC;
 }
 
@@ -243,6 +260,11 @@ export default {
 .collectionButton {
   width: 32px;
   height: 32px;
+}
+
+.myPostButton {
+  width: 32px;
+  height: 32px;
   margin-right: 16px;
 }
 
@@ -259,5 +281,4 @@ export default {
   width: 500px;
   font-family: PingFangSC;
 }
-
 </style>

@@ -15,7 +15,7 @@
       </div>
     </div>
     <!--post list-->
-    <div class="postListCard">
+    <div v-if="postList.length !== 0 " class="postListCard">
       <div class="postItem" v-for="post in postList" :key="post.post_id" @click="getPostDetail(post.post_id)">
         <div class="postItemAvatar">
           <el-avatar shape="circle" :size="40">
@@ -32,6 +32,9 @@
           <el-divider class="dividerLine"></el-divider>
         </div>
       </div>
+    </div>
+    <div v-else >
+      <el-empty description="No Data" />
     </div>
   </div>
 </template>

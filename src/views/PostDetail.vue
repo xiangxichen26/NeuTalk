@@ -18,8 +18,9 @@
                         <div class="postDetailTitle">{{ postDetail.title }}</div>
                     </div>
                     <div>
-                        <el-button v-if="favourite === '1'" text type="primary" @click="collectPost">Collect</el-button>
+                        <el-button v-if="postDetail.is_favorite === false " text type="primary" @click="collectPost">Collect</el-button>
                         <el-button v-else text type="primary" @click="cancelCollectPost">Remove collection</el-button>
+                        <el-button v-if="postDetail.author_username === localUsername" text type="danger" @click="ifDelete">Delete</el-button>
                     </div>
                 </div>
 
@@ -75,7 +76,7 @@ import { reactive, ref, getCurrentInstance, onMounted } from 'vue'
 import { formatTime } from '@/utils/time';
 import { useRouter } from 'vue-router';
 import { Plus, Star } from '@element-plus/icons-vue';
-import { ElMessage } from 'element-plus';
+import { ElMessage,ElMessageBox } from 'element-plus';
 import axios from 'axios';
 
 
@@ -99,10 +100,12 @@ export default {
                     author_username: "",
                     created_at: "",
                 },
-            ]
+            ],
+            is_favorite: false,
         });
 
-        const favourite = ref('1');
+        const localUsername = window.localStorage.getItem('username');
+
         const commentCentent = reactive({
             content: "",
         });
@@ -122,7 +125,7 @@ export default {
             proxy.$get("http://127.0.0.1:5173/api/posts/" + post_id)
                 .then((res: any) => {
                     postDetail.value = res;
-                    console.log(res);
+                    console.log(res.is_favorite);
                 })
                 .catch((err: any) => {
                     console.log(err);
@@ -133,8 +136,7 @@ export default {
                 .then((res: any) => {
                     console.log(res);
                     ElMessage.success("Collect post successfully");
-                    favourite.value = '2';
-                    console.log(favourite);
+                    getPostDetail();
                 })
                 .catch((err: any) => {
                     console.log(err);
@@ -145,7 +147,7 @@ export default {
             try {
                 await axios.delete('http://127.0.0.1:5173/api/favorites/remove/'+ post_id + "/");
                 ElMessage.success("Remove collection successfully");
-                favourite.value = '1';
+                getPostDetail();
             } catch (error) {
                 if (axios.isAxiosError(error)) {
                     console.error('Error deleting resource:', error.response?.data);
@@ -159,8 +161,45 @@ export default {
         const goToPostList = () => {
             router.push({ path: "/postList" });
         };
+
+        const ifDelete = () => {
+            ElMessageBox.confirm("Are you sure to delete this post?", "Warning", {
+                confirmButtonText: "OK",
+                cancelButtonText: "Cancel",
+                type: "warning",
+                title: "Delete My Post",
+            })
+                .then(() => {
+                    deletePost();
+                })
+                .catch(() => {
+                    ElMessage({
+                        type: "info",
+                        message: "Delete canceled",
+                    });
+                });
+        };
+
+        const deletePost = async () => {
+            try {
+                await axios.delete('http://127.0.0.1:5173/api/posts/delete/'+ post_id + "/");
+                ElMessage.success("Delete post successfully");
+                router.push({ path: "/postList" });
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    console.error('Error deleting resource:', error.response?.data);
+                } else {
+                    console.error('Unexpected error:', error);
+                }
+                throw error; 
+            }
+            
+        };
+
         onMounted(() => {
             getPostDetail();
+            
+
         });
         return {
             postDetail,
@@ -172,8 +211,10 @@ export default {
             goToPostList,
             Star,
             collectPost,
-            favourite,
-            cancelCollectPost
+            cancelCollectPost,
+            deletePost,
+            localUsername,
+            ifDelete
         };
     },
 }

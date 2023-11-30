@@ -24,6 +24,16 @@ const router = createRouter({
           name:'postCollections',
           component: () => import('../views/PostCollections.vue')
         },
+        {
+          path:'/myPostList',
+          name:'myPostList',
+          component: () => import('../views/MyPostList.vue')
+        },
+        {
+          path:'/myCollectionList',
+          name:'myCollectionList',
+          component: () => import('../views/MyCollectionList.vue')
+        },
 
       ]
     },

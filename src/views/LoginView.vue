@@ -99,11 +99,12 @@ export default {
         });
         router.push({ path: '/' });
         window.localStorage.setItem('token', res.token);
-        console.log(window.localStorage.getItem('token'))
+        console.log(window.localStorage.getItem('token'));
+        window.localStorage.setItem('username', loginForm.username);
       })
       .catch((err: any) => {
         ElMessage({
-          message: 'Login failed',
+          message: err.error,
           type: 'error'
         });
         console.log(err)
@@ -123,11 +124,10 @@ export default {
       })
       .catch((err: any) => {
         ElMessage({
-          message: 'Register failed',
+          message: err.error,
           type: 'error'
         });
         console.log(err)
-        console.log(window.localStorage.getItem('token'))
       })
     }
 

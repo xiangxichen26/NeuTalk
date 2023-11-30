@@ -59,7 +59,7 @@ axios.interceptors.response.use(
                     break;
                 // 其他错误，直接抛出错误提示                
                 default:
-                    ElMessage.error(error.response.data.message);
+                    // ElMessage.error(error.response.data.message);
             }
             return Promise.reject(error.response);
         }
