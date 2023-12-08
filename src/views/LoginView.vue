@@ -75,6 +75,7 @@ import { reactive, ref, getCurrentInstance } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 export default {
   setup() {
@@ -97,10 +98,10 @@ export default {
           message: 'Login successfully',
           type: 'success'
         });
+        window.sessionStorage.setItem('token', res.token);
+        console.log(window.sessionStorage.getItem('token'));
+        window.sessionStorage.setItem('username', loginForm.username);
         router.push({ path: '/' });
-        window.localStorage.setItem('token', res.token);
-        console.log(window.localStorage.getItem('token'));
-        window.localStorage.setItem('username', loginForm.username);
       })
       .catch((err: any) => {
         ElMessage({

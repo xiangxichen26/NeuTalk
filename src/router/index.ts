@@ -20,11 +20,6 @@ const router = createRouter({
           component: () => import('../views/PostDetail.vue')
         },
         {
-          path:'/postCollections',
-          name:'postCollections',
-          component: () => import('../views/PostCollections.vue')
-        },
-        {
           path:'/myPostList',
           name:'myPostList',
           component: () => import('../views/MyPostList.vue')

@@ -104,7 +104,7 @@ export default {
             is_favorite: false,
         });
 
-        const localUsername = window.localStorage.getItem('username');
+        const localUsername = window.sessionStorage.getItem('username');
 
         const commentCentent = reactive({
             content: "",

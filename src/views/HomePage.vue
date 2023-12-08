@@ -75,6 +75,7 @@ import { getCurrentInstance, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router';
 import { formatTime } from '../utils/time';
 import { ChatLineRound, Search, Star, Folder } from '@element-plus/icons-vue';
+import axios from 'axios';
 
 export default {
   setup() {
@@ -103,7 +104,7 @@ export default {
 
 
     const createPost = () => {
-      proxy.$post('http://127.0.0.1:5173/api/new/', createPostForm)
+      axios.post('new/', createPostForm)
         .then(() => {
           createPostForm.content = '';
           createPostForm.title = '';
@@ -125,9 +126,9 @@ export default {
 
     const handleCommand = (command: string | number | object) => {
       if (command === 'logout') {
-        proxy.$post('http://127.0.0.1:5173/api/logout/')
+        axios.post('logout/')
           .then(() => {
-            window.localStorage.clear();
+            window.sessionStorage.clear();
             ElMessage.success('Log out successfully');
             router.push({ path: '/login' });
           })
@@ -150,8 +151,7 @@ export default {
     };
 
     const getPostList = () => {
-      //console.log(localStorage.getItem('token'))
-      proxy.$get('threads/')
+      axios.get('threads/')
         .then((res: any) => {
           postList.value = res;
           console.log(postList.value)

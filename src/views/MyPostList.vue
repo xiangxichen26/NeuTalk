@@ -67,7 +67,7 @@
       const getPostList = () => {
         axios.get('threads/', {
             params: {
-              author_name: window.localStorage.getItem('username'),
+              author_name: window.sessionStorage.getItem('username'),
               start_date: filterDate.value[0],
               end_date: filterDate.value[1],
             }
@@ -92,7 +92,7 @@
   
       onMounted(() => {
         getPostList();
-        console.log(window.localStorage.getItem('username'))
+        console.log(window.sessionStorage.getItem('username'))
       });
   
   
